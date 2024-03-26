@@ -1,4 +1,6 @@
-﻿namespace DogtorAPI.Model
+﻿using System.Reflection.Metadata;
+
+namespace DogtorAPI.Model
 {
     public class Pet
     {
@@ -7,17 +9,20 @@
         public string Race { get; set; }
         public string Color { get; set; }
         public string Description { get; set; }
+        public Guid TutorID { get; set; }
+        public Tutor Tutor{ get; set; }
         protected Pet()
         {
             
         }
-        public Pet(string name, string race, string color, string description, Guid userId)
+        public Pet(string name, string race, string color, string description, Guid tutorID)
         {
             Id = Guid.NewGuid();
             Name = name;
             Race = race;
             Color = color;
             Description = description;
+            TutorID = tutorID;
         }
     }
 }

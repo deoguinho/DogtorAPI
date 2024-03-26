@@ -4,6 +4,7 @@ using DogtorAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DogtorAPI.Migrations
 {
     [DbContext(typeof(DogtorAPIContext))]
-    partial class DogtorAPIContextModelSnapshot : ModelSnapshot
+    [Migration("20240326023254_CreateForeignTutor")]
+    partial class CreateForeignTutor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,14 +46,14 @@ namespace DogtorAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("TutorID")
+                    b.Property<Guid?>("TutorId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TutorID");
+                    b.HasIndex("TutorId");
 
-                    b.ToTable("Pet", (string)null);
+                    b.ToTable("Pet");
                 });
 
             modelBuilder.Entity("DogtorAPI.Model.Tutor", b =>
@@ -104,7 +106,7 @@ namespace DogtorAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tutor", (string)null);
+                    b.ToTable("Tutor");
                 });
 
             modelBuilder.Entity("DogtorAPI.Model.Veterinario", b =>
@@ -157,7 +159,7 @@ namespace DogtorAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Veterinario", (string)null);
+                    b.ToTable("Veterinario");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -360,13 +362,9 @@ namespace DogtorAPI.Migrations
 
             modelBuilder.Entity("DogtorAPI.Model.Pet", b =>
                 {
-                    b.HasOne("DogtorAPI.Model.Tutor", "Tutor")
+                    b.HasOne("DogtorAPI.Model.Tutor", null)
                         .WithMany("Pets")
-                        .HasForeignKey("TutorID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Tutor");
+                        .HasForeignKey("TutorId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
