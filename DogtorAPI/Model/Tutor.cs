@@ -1,4 +1,6 @@
-﻿namespace DogtorAPI.Model
+﻿using Microsoft.Extensions.Hosting;
+
+namespace DogtorAPI.Model
 {
     public class Tutor
     {
@@ -14,6 +16,8 @@
         public string City { get; set; }
         public string Complement { get; set; }
         public string Neighborhood { get; set; }
+
+        public ICollection<Pet> Pets { get; set; }
 
         protected Tutor()
         {
