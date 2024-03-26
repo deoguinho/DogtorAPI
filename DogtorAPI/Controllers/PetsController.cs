@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DogtorAPI.Data;
 using DogtorAPI.Model;
+using DogtorAPI.ViewModel.Pet;
+using System.Diagnostics;
+using System.Drawing;
+using System.Xml.Linq;
 
 namespace DogtorAPI.Controllers
 {
@@ -84,16 +88,18 @@ namespace DogtorAPI.Controllers
         // POST: api/Pets
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Pet>> PostPet(Pet pet)
+        public async Task<ActionResult<CreatePetResponse>> PostPet(CreatePetRequest pet)
         {
-          if (_context.Pet == null)
-          {
-              return Problem("Entity set 'DogtorAPIContext.Pet'  is null.");
-          }
-            _context.Pet.Add(pet);
+            if (_context.Pet == null)
+            {
+                return Problem("Entity set 'DogtorAPIContext.Pet'  is null.");
+            }
+            var model = new Pet(pet.Name, pet.Race, pet.Color, pet.Description, pet.TutorID);
+
+            _context.Pet.Add(model);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPet", new { id = pet.Id }, pet);
+            return CreatedAtAction("GetPet", new { id = model.Id }, model);
         }
 
         // DELETE: api/Pets/5

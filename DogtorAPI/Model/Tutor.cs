@@ -16,14 +16,12 @@ namespace DogtorAPI.Model
         public string City { get; set; }
         public string Complement { get; set; }
         public string Neighborhood { get; set; }
-
-        public ICollection<Pet> Pets { get; set; }
+        public ICollection<Pet>? Pets { get; set; }
 
         protected Tutor()
         {
             
         }
-
         public Tutor(Guid id, string name, string email, DateTime birth, string cpf, string phone, string cep, string street, int number, string city, string complement, string neighborhood)
         {
             Id = id;

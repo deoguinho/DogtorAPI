@@ -1,10 +1,8 @@
-﻿using DogtorAPI.ViewModel.Tutor;
-using Microsoft.Extensions.Hosting;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DogtorAPI.ViewModel.Pet
 {
-    public class CreatePetRequest
+    public class CreatePetResponse
     {
         [Required]
         public string Name { get; set; }
@@ -14,6 +12,5 @@ namespace DogtorAPI.ViewModel.Pet
         public string Color { get; set; }
         public string Description { get; set; }
         public Guid TutorID { get; set; }
-
     }
 }

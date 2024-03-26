@@ -43,6 +43,5 @@ namespace DogtorAPI.ViewModel.Tutor
 
         [Required]
         public string Neighborhood { get; set; }
-        public ICollection<CreatePetRequest>? createPetRequests { get; set; }
     }
 }

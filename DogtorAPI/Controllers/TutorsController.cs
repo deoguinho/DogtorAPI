@@ -9,6 +9,7 @@ using DogtorAPI.Data;
 using DogtorAPI.Model;
 using Microsoft.AspNetCore.Identity;
 using DogtorAPI.ViewModel.Tutor;
+using System.Drawing;
 
 namespace DogtorAPI.Controllers
 {
@@ -29,11 +30,12 @@ namespace DogtorAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Tutor>>> GetTutor()
         {
-          if (_context.Tutor == null)
-          {
-              return NotFound();
-          }
-            return await _context.Tutor.ToListAsync();
+            if (_context.Tutor == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(await _context.Tutor.Include(pets => pets.Pets).ToListAsync());
         }
 
         // GET: api/Tutors/5

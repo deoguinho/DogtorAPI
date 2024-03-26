@@ -9,19 +9,20 @@ namespace DogtorAPI.Model
         public string Race { get; set; }
         public string Color { get; set; }
         public string Description { get; set; }
-        public Guid TutorId { get; set; }
+        public Guid TutorID { get; set; }
+        public Tutor Tutor{ get; set; }
         protected Pet()
         {
             
         }
-        public Pet(string name, string race, string color, string description, Guid tutorid)
+        public Pet(string name, string race, string color, string description, Guid tutorID)
         {
             Id = Guid.NewGuid();
             Name = name;
             Race = race;
             Color = color;
             Description = description;
-            TutorId = tutorid;
+            TutorID = tutorID;
         }
     }
 }
