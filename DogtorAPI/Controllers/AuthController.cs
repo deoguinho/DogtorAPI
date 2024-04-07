@@ -6,16 +6,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.IdentityModel.Tokens;
 using DogtorAPI.ViewModel.Auth;
+using DogtorAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace DogtorAPI.Controllers
 {
     public class AuthController : ControllerBase
     {
         private readonly UserManager<IdentityUser> userManager;
+        private readonly DogtorAPIContext _context;
 
-        public AuthController(UserManager<IdentityUser> userManager)
+        public AuthController(UserManager<IdentityUser> userManager, DogtorAPIContext context)
         {
             this.userManager = userManager;
+            _context = context;
+       
         }
 
         [HttpPost]
@@ -25,14 +30,38 @@ namespace DogtorAPI.Controllers
         {
             IdentityUser identityUser;
 
-            if(loginRequest == null || (identityUser = await ValidateUser(loginRequest)) == null)
+            if (loginRequest == null || (identityUser = await ValidateUser(loginRequest)) == null)
             {
                 return new BadRequestObjectResult(new { Message = "Login failed." });
             }
 
             var token = GenerateToken(identityUser);
 
-            return Ok(new { Token = token, Message = "Success." });
+            if (_context.Tutor == null)
+            {
+                return NotFound();
+            }
+
+            if (_context.Veterinario == null)
+            {
+                return NotFound();
+            }
+
+            var tutor = await _context.Tutor.FindAsync(Guid.Parse(identityUser.Id));
+            if (tutor != null)
+            {
+                return Ok(new { Token = token, Message = "Success.", Permission = "tutor" });
+            }
+
+            var veterinario = await _context.Veterinario.FindAsync(Guid.Parse(identityUser.Id));
+            if (veterinario != null)
+            {
+                return Ok(new { Token = token, Message = "Success.", Permission = "veterinario" });
+
+            }
+
+            return NotFound();
+
         }
 
         private async Task<IdentityUser> ValidateUser(LoginRequest credentials)

@@ -50,7 +50,9 @@ namespace DogtorAPI.Controllers
                 return NotFound();
             }
 
-            return veterinario;
+            object getVeterinarioObject = new { veterinario };
+
+            return Ok(getVeterinarioObject);
         }
 
         // PUT: api/Veterinarios/5

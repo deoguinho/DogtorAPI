@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DogtorAPI.Data;
 using DogtorAPI.Model;
+using DogtorAPI.ViewModel.Pet;
+using System.Diagnostics;
+using System.Drawing;
+using System.Xml.Linq;
 
 namespace DogtorAPI.Controllers
 {
@@ -22,7 +26,9 @@ namespace DogtorAPI.Controllers
         }
 
         // GET: api/Pets
+        [Authorize]
         [HttpGet]
+
         public async Task<ActionResult<IEnumerable<Pet>>> GetPet()
         {
           if (_context.Pet == null)
@@ -33,6 +39,7 @@ namespace DogtorAPI.Controllers
         }
 
         // GET: api/Pets/5
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Pet>> GetPet(Guid id)
         {
@@ -83,6 +90,7 @@ namespace DogtorAPI.Controllers
 
         // POST: api/Pets
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Pet>> PostPet(Pet pet)
         {
@@ -97,6 +105,7 @@ namespace DogtorAPI.Controllers
         }
 
         // DELETE: api/Pets/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePet(Guid id)
         {

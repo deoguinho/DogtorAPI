@@ -29,11 +29,12 @@ namespace DogtorAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Tutor>>> GetTutor()
         {
-          if (_context.Tutor == null)
-          {
-              return NotFound();
-          }
-            return await _context.Tutor.ToListAsync();
+            if (_context.Tutor == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(await _context.Tutor.Include(pets => pets.Pets).ToListAsync());
         }
 
         // GET: api/Tutors/5
@@ -45,13 +46,16 @@ namespace DogtorAPI.Controllers
               return NotFound();
           }
             var tutor = await _context.Tutor.FindAsync(id);
-
+    
             if (tutor == null)
             {
                 return NotFound();
             }
 
-            return tutor;
+            object getTutorObject = new { tutor };
+
+            return Ok(getTutorObject);
+            
         }
 
         // PUT: api/Tutors/5
@@ -99,8 +103,9 @@ namespace DogtorAPI.Controllers
                 return BadRequest("Já possui um tutor com este e-mail!");
 
             var userId = await Register(request.Email, request.Password);
+            var type = "Tutor";
 
-            var tutor = new Tutor(userId, request.Name, request.Email, request.Birth, request.CPF, request.Phone, request.Cep, request.Street, request.Number, request.City, request.Complement, request.Neighborhood);
+            var tutor = new Tutor(userId, type, request.Name, request.Email, request.Birth, request.CPF, request.Phone, request.Cep, request.Street, request.Number, request.City, request.Complement, request.Neighborhood);
 
             await _context.Tutor.AddAsync(tutor);
 
