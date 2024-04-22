@@ -17,6 +17,23 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.Sign
 
 var key = Encoding.ASCII.GetBytes("ThisIsSomeSampleSymmetricEncryptionKey");
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Development", builder => builder
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    );
+
+    options.AddPolicy("Production", builder => builder
+    .WithOrigins("https://dogtor.com.br")
+    .SetIsOriginAllowedToAllowWildcardSubdomains()
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    );
+});
+
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -72,12 +89,16 @@ builder.Services.AddSwaggerGen(setup =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("Development");
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseCors("Development");
+    app.UseDeveloperExceptionPage();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();

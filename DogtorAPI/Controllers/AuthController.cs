@@ -22,12 +22,13 @@ namespace DogtorAPI.Controllers
             _context = context;
        
         }
-
+        
         [HttpPost]
         [Route("Login")]
-
-        public async Task<IActionResult> Login(LoginRequest loginRequest)
+        //[FromBody] colocar antes do login request!
+        public async Task<IActionResult> Login( LoginRequest loginRequest)
         {
+            
             IdentityUser identityUser;
 
             if (loginRequest == null || (identityUser = await ValidateUser(loginRequest)) == null)
@@ -50,13 +51,13 @@ namespace DogtorAPI.Controllers
             var tutor = await _context.Tutor.FindAsync(Guid.Parse(identityUser.Id));
             if (tutor != null)
             {
-                return Ok(new { Token = token, Message = "Success.", Permission = "tutor" });
+                return Ok(new { Token = token, Message = "Success.", User_ID = identityUser.Id, Permission = "tutor" });
             }
 
             var veterinario = await _context.Veterinario.FindAsync(Guid.Parse(identityUser.Id));
             if (veterinario != null)
             {
-                return Ok(new { Token = token, Message = "Success.", Permission = "veterinario" });
+                return Ok(new { Token = token, Message = "Success.", User_ID = identityUser.Id, Permission = "veterinario"});
 
             }
 

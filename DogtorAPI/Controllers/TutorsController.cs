@@ -94,24 +94,30 @@ namespace DogtorAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Tutor>> PostTutor(CreateTutorRequest request)
         {
-            if (!ModelState.IsValid)
+            try
+            {
+                if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var existingTutor = await _context.Tutor.FirstOrDefaultAsync(x => x.Email == request.Email);
+                var existingTutor = await _context.Tutor.FirstOrDefaultAsync(x => x.Email == request.Email);
 
-            if (existingTutor != null)
-                return BadRequest("Já possui um tutor com este e-mail!");
+                if (existingTutor != null)
+                    return BadRequest("Já possui um tutor com este e-mail!");
+     
+                var userId = await Register(request.Email, request.Password);
+            
+                var tutor = new Tutor(userId, request.Name, request.Email, request.Birth, request.CPF, request.Phone, request.Cep, request.Street, request.Number, request.City, request.Complement, request.Neighborhood);
 
-            var userId = await Register(request.Email, request.Password);
-            var type = "Tutor";
+                await _context.Tutor.AddAsync(tutor);
 
-            var tutor = new Tutor(userId, type, request.Name, request.Email, request.Birth, request.CPF, request.Phone, request.Cep, request.Street, request.Number, request.City, request.Complement, request.Neighborhood);
+                await _context.SaveChangesAsync();
 
-            await _context.Tutor.AddAsync(tutor);
-
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetTutor", new { id = tutor.Id }, tutor);
+                return CreatedAtAction("GetTutor", new { id = tutor.Id }, tutor);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         // DELETE: api/Tutors/5

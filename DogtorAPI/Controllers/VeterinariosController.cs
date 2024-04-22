@@ -101,7 +101,8 @@ namespace DogtorAPI.Controllers
 
             var userId = await Register(request.Email, request.Password);
 
-            var veterinario = new Veterinario(userId, request.Name, request.Email, request.Birth, request.CRMV, request.Phone, request.Cep, request.Street, request.Number, request.City, request.Complement, request.Neighborhood);
+            var veterinario = new Veterinario(userId, request.Name, request.Email, request.Birth, request.Phone, request.Cep, request.Street, request.Number, request.City, 
+                request.Complement, request.Neighborhood, request.UF, request.CRMV, request.Foto_CRMV, request.CPF, request.Especialidade);
 
             await _context.Veterinario.AddAsync(veterinario);
 

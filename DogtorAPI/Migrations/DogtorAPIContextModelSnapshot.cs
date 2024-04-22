@@ -44,11 +44,14 @@ namespace DogtorAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("TutorID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TutorID");
 
-                    b.ToTable("Pet", (string)null);
+                    b.ToTable("Pet");
                 });
 
             modelBuilder.Entity("DogtorAPI.Model.Tutor", b =>
@@ -57,8 +60,9 @@ namespace DogtorAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("Birth")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Birth")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CPF")
                         .IsRequired()
@@ -99,10 +103,6 @@ namespace DogtorAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("Tutor");
@@ -114,8 +114,13 @@ namespace DogtorAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("Birth")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Birth")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CPF")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CRMV")
                         .IsRequired()
@@ -137,6 +142,14 @@ namespace DogtorAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Especialidade")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Foto_CRMV")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -153,6 +166,10 @@ namespace DogtorAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UF")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -359,6 +376,15 @@ namespace DogtorAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("DogtorAPI.Model.Pet", b =>
+                {
+                    b.HasOne("DogtorAPI.Model.Tutor", null)
+                        .WithMany("Pets")
+                        .HasForeignKey("TutorID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -408,6 +434,11 @@ namespace DogtorAPI.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DogtorAPI.Model.Tutor", b =>
+                {
+                    b.Navigation("Pets");
                 });
 #pragma warning restore 612, 618
         }

@@ -11,6 +11,7 @@ using DogtorAPI.ViewModel.Pet;
 using System.Diagnostics;
 using System.Drawing;
 using System.Xml.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DogtorAPI.Controllers
 {

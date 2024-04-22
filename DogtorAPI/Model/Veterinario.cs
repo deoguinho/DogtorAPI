@@ -5,8 +5,7 @@
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
-        public DateTime Birth { get; set; }
-        public string CRMV { get; set; }
+        public string Birth { get; set; }
         public string Phone { get; set; }
         public string Cep { get; set; }
         public string Street { get; set; }
@@ -15,17 +14,22 @@
         public string Complement { get; set; }
         public string Neighborhood { get; set; }
 
+        public string UF { get; set; }
+        public string CRMV { get; set; }
+        public string Foto_CRMV { get; set; }
+        public string CPF { get; set; }
+        public string Especialidade { get; set; }
         protected Veterinario()
         {
         }
 
-        public Veterinario(Guid id, string name, string email, DateTime birth, string crmv, string phone, string cep, string street, int number, string city, string complement, string neighborhood)
+        public Veterinario(Guid id, string name, string email, string birth, string phone, string cep, 
+            string street, int number, string city, string complement, string neighborhood, string uf, string crmv, string foto_CRMV, string cpf, string especialidade)
         {
             Id = id;
             Name = name;
             Email = email;
             Birth = birth;
-            CRMV = crmv;
             Phone = phone;
             Cep = cep;
             Street = street;
@@ -33,6 +37,12 @@
             City = city;
             Complement = complement;
             Neighborhood = neighborhood;
+
+            UF = uf;
+            CRMV = crmv;
+            Foto_CRMV = foto_CRMV;
+            CPF = cpf;
+            Especialidade = especialidade;
         }
     }
 }
