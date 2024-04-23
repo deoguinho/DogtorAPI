@@ -1,4 +1,6 @@
-﻿namespace DogtorAPI.Model
+﻿using System.Collections.Generic;
+
+namespace DogtorAPI.Model
 {
     public class Veterinario
     {
@@ -18,13 +20,13 @@
         public string CRMV { get; set; }
         public string Foto_CRMV { get; set; }
         public string CPF { get; set; }
-        public string Especialidade { get; set; }
+        public List<Especialidade>? Especialidade { get; set; }
         protected Veterinario()
         {
         }
 
         public Veterinario(Guid id, string name, string email, string birth, string phone, string cep, 
-            string street, int number, string city, string complement, string neighborhood, string uf, string crmv, string foto_CRMV, string cpf, string especialidade)
+            string street, int number, string city, string complement, string neighborhood, string uf, string crmv, string foto_CRMV, string cpf)
         {
             Id = id;
             Name = name;
@@ -42,7 +44,6 @@
             CRMV = crmv;
             Foto_CRMV = foto_CRMV;
             CPF = cpf;
-            Especialidade = especialidade;
         }
     }
 }

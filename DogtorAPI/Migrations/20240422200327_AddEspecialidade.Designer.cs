@@ -4,6 +4,7 @@ using DogtorAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DogtorAPI.Migrations
 {
     [DbContext(typeof(DogtorAPIContext))]
-    partial class DogtorAPIContextModelSnapshot : ModelSnapshot
+    [Migration("20240422200327_AddEspecialidade")]
+    partial class AddEspecialidade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,12 +34,10 @@ namespace DogtorAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("VeterinarioID")
+                    b.Property<Guid>("VeteriarioID")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("VeterinarioID");
 
                     b.ToTable("Especialidade");
                 });
@@ -159,6 +159,10 @@ namespace DogtorAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Especialidade")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -392,15 +396,6 @@ namespace DogtorAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DogtorAPI.Model.Especialidade", b =>
-                {
-                    b.HasOne("DogtorAPI.Model.Veterinario", null)
-                        .WithMany("Especialidade")
-                        .HasForeignKey("VeterinarioID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("DogtorAPI.Model.Pet", b =>
                 {
                     b.HasOne("DogtorAPI.Model.Tutor", null)
@@ -464,11 +459,6 @@ namespace DogtorAPI.Migrations
             modelBuilder.Entity("DogtorAPI.Model.Tutor", b =>
                 {
                     b.Navigation("Pets");
-                });
-
-            modelBuilder.Entity("DogtorAPI.Model.Veterinario", b =>
-                {
-                    b.Navigation("Especialidade");
                 });
 #pragma warning restore 612, 618
         }

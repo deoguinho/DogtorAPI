@@ -21,5 +21,7 @@ namespace DogtorAPI.Data
         public DbSet<DogtorAPI.Model.Tutor>? Tutor { get; set; }
 
         public DbSet<DogtorAPI.Model.Veterinario>? Veterinario { get; set; }
+
+        public DbSet<DogtorAPI.Model.Especialidade>? Especialidade { get; set; }
     }
 }

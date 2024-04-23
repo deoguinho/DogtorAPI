@@ -32,7 +32,9 @@ namespace DogtorAPI.Controllers
             {
                 return NotFound();
             }
-            return await _context.Veterinario.ToListAsync();
+
+            return Ok(await _context.Veterinario.Include(Especialidade => Especialidade.Especialidade).ToListAsync());
+
         }
 
         // GET: api/Veterinarios/5
@@ -43,7 +45,10 @@ namespace DogtorAPI.Controllers
             {
                 return NotFound();
             }
-            var veterinario = await _context.Veterinario.FindAsync(id);
+            var veterinario = await _context.Veterinario.Include(Especialidade => Especialidade.Especialidade)
+                .FirstAsync(x => x.Id == id);
+
+
 
             if (veterinario == null)
             {
@@ -102,9 +107,14 @@ namespace DogtorAPI.Controllers
             var userId = await Register(request.Email, request.Password);
 
             var veterinario = new Veterinario(userId, request.Name, request.Email, request.Birth, request.Phone, request.Cep, request.Street, request.Number, request.City, 
-                request.Complement, request.Neighborhood, request.UF, request.CRMV, request.Foto_CRMV, request.CPF, request.Especialidade);
+                request.Complement, request.Neighborhood, request.UF, request.CRMV, request.Foto_CRMV, request.CPF);
+
+            var especialidades = request.Especialidade!.Select(especialidade =>
+                new Especialidade(especialidade, userId));
 
             await _context.Veterinario.AddAsync(veterinario);
+
+            _context.Especialidade!.AddRange(especialidades); 
 
             await _context.SaveChangesAsync();
 

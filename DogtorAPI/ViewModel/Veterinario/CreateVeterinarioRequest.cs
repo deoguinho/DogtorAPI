@@ -1,4 +1,7 @@
-﻿namespace DogtorAPI.ViewModel.Veterinario
+﻿using DogtorAPI.Model;
+using System.Collections.Generic;
+
+namespace DogtorAPI.ViewModel.Veterinario
 {
     public class CreateVeterinarioRequest
     {
@@ -17,6 +20,6 @@
         public string CRMV { get; set; }
         public string Foto_CRMV { get; set; }
         public string CPF { get; set; }
-        public string Especialidade { get; set; }
+        public string[] Especialidade { get; set; }
     }
 }
