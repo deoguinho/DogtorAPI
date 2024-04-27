@@ -26,7 +26,7 @@ namespace DogtorAPI.Controllers
         [HttpPost]
         [Route("Login")]
         //[FromBody] colocar antes do login request!
-        public async Task<IActionResult> Login( LoginRequest loginRequest)
+        public async Task<IActionResult> Login([FromBody]LoginRequest loginRequest)
         {
             
             IdentityUser identityUser;

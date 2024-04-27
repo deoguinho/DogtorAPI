@@ -93,16 +93,16 @@ namespace DogtorAPI.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<Pet>> PostPet(Pet pet)
+        public async Task<ActionResult<Pet>> PostPet(CreatePetRequest pet)
         {
           if (_context.Pet == null)
           {
               return Problem("Entity set 'DogtorAPIContext.Pet'  is null.");
           }
-            _context.Pet.Add(pet);
+            _context.Pet.Add(Pet.CreatePetFromPetRequest(pet));
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPet", new { id = pet.Id }, pet);
+            return CreatedAtAction("GetPet", new { id = Guid.NewGuid() }, pet);
         }
 
         // DELETE: api/Pets/5
