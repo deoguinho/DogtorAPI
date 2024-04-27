@@ -21,6 +21,8 @@ namespace DogtorAPI.Model
         public string Foto_CRMV { get; set; }
         public string CPF { get; set; }
         public List<Especialidade>? Especialidade { get; set; }
+        public List<VeterinarioFotos>? VeterinarioFotos { get; set; }
+
         protected Veterinario()
         {
         }

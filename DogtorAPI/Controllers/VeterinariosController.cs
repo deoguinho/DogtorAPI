@@ -45,9 +45,8 @@ namespace DogtorAPI.Controllers
             {
                 return NotFound();
             }
-            var veterinario = await _context.Veterinario.Include(Especialidade => Especialidade.Especialidade)
-                .FirstAsync(x => x.Id == id);
-
+            var veterinario = await _context.Veterinario.Include(Especialidade => Especialidade.Especialidade).Include(VeterinarioFotos => VeterinarioFotos.VeterinarioFotos)
+               .FirstAsync(x => x.Id == id);
 
 
             if (veterinario == null)
@@ -112,9 +111,16 @@ namespace DogtorAPI.Controllers
             var especialidades = request.Especialidade!.Select(especialidade =>
                 new Especialidade(especialidade, userId));
 
+            var veterinarioFotos = request.Link!.Select(foto =>
+                new VeterinarioFotos(foto, userId)
+            );
+           
+
             await _context.Veterinario.AddAsync(veterinario);
 
-            _context.Especialidade!.AddRange(especialidades); 
+            _context.Especialidade!.AddRange(especialidades);
+            _context.VeterinarioFotos!.AddRange(veterinarioFotos);
+
 
             await _context.SaveChangesAsync();
 

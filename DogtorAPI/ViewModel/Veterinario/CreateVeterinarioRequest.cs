@@ -21,5 +21,7 @@ namespace DogtorAPI.ViewModel.Veterinario
         public string Foto_CRMV { get; set; }
         public string CPF { get; set; }
         public string[] Especialidade { get; set; }
+        public List<string> Link { get; set; } = new List<string>();
+
     }
 }
