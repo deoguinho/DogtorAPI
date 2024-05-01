@@ -7,68 +7,60 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DogtorAPI.Data;
 using DogtorAPI.Model;
-using DogtorAPI.ViewModel.Pet;
-using System.Diagnostics;
-using System.Drawing;
-using System.Xml.Linq;
-using Microsoft.AspNetCore.Authorization;
 
 namespace DogtorAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PetsController : ControllerBase
+    public class ConsultasController : ControllerBase
     {
         private readonly DogtorAPIContext _context;
 
-        public PetsController(DogtorAPIContext context)
+        public ConsultasController(DogtorAPIContext context)
         {
             _context = context;
         }
 
-        // GET: api/Pets
-        //[Authorize]
+        // GET: api/Consultas
         [HttpGet]
-
-        public async Task<ActionResult<IEnumerable<Pet>>> GetPet()
+        public async Task<ActionResult<IEnumerable<Consulta>>> GetConsulta()
         {
-          if (_context.Pet == null)
+          if (_context.Consulta == null)
           {
               return NotFound();
           }
-            return await _context.Pet.ToListAsync();
+            return await _context.Consulta.ToListAsync();
         }
 
-        // GET: api/Pets/5
-        //[Authorize]
+        // GET: api/Consultas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Pet>> GetPet(Guid id)
+        public async Task<ActionResult<Consulta>> GetConsulta(Guid id)
         {
-          if (_context.Pet == null)
+          if (_context.Consulta == null)
           {
               return NotFound();
           }
-            var pet = await _context.Pet.FindAsync(id);
+            var consulta = await _context.Consulta.FindAsync(id);
 
-            if (pet == null)
+            if (consulta == null)
             {
                 return NotFound();
             }
 
-            return pet;
+            return consulta;
         }
 
-        // PUT: api/Pets/5
+        // PUT: api/Consultas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPet(Guid id, Pet pet)
+        public async Task<IActionResult> PutConsulta(Guid id, Consulta consulta)
         {
-            if (id != pet.Id)
+            if (id != consulta.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(pet).State = EntityState.Modified;
+            _context.Entry(consulta).State = EntityState.Modified;
 
             try
             {
@@ -76,7 +68,7 @@ namespace DogtorAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PetExists(id))
+                if (!ConsultaExists(id))
                 {
                     return NotFound();
                 }
@@ -89,46 +81,44 @@ namespace DogtorAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Pets
+        // POST: api/Consultas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[Authorize]
         [HttpPost]
-        public async Task<ActionResult<Pet>> PostPet(CreatePetRequest pet)
+        public async Task<ActionResult<Consulta>> PostConsulta(Consulta consulta)
         {
-          if (_context.Pet == null)
+          if (_context.Consulta == null)
           {
-              return Problem("Entity set 'DogtorAPIContext.Pet'  is null.");
+              return Problem("Entity set 'DogtorAPIContext.Consulta'  is null.");
           }
-            _context.Pet.Add(Pet.CreatePetFromPetRequest(pet));
+            _context.Consulta.Add(consulta);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPet", new { id = Guid.NewGuid() }, pet);
+            return CreatedAtAction("GetConsulta", new { id = consulta.Id }, consulta);
         }
 
-        // DELETE: api/Pets/5
-        //[Authorize]
+        // DELETE: api/Consultas/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePet(Guid id)
+        public async Task<IActionResult> DeleteConsulta(Guid id)
         {
-            if (_context.Pet == null)
+            if (_context.Consulta == null)
             {
                 return NotFound();
             }
-            var pet = await _context.Pet.FindAsync(id);
-            if (pet == null)
+            var consulta = await _context.Consulta.FindAsync(id);
+            if (consulta == null)
             {
                 return NotFound();
             }
 
-            _context.Pet.Remove(pet);
+            _context.Consulta.Remove(consulta);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool PetExists(Guid id)
+        private bool ConsultaExists(Guid id)
         {
-            return (_context.Pet?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Consulta?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

@@ -45,17 +45,14 @@ namespace DogtorAPI.Controllers
           {
               return NotFound();
           }
-            var tutor = await _context.Tutor.FindAsync(id);
-    
+            var tutor = await _context.Tutor.Include(Pet => Pet.Pets).FirstAsync(x => x.Id == id);
+
             if (tutor == null)
             {
                 return NotFound();
             }
 
-            object getTutorObject = new { tutor };
-
-            return Ok(getTutorObject);
-            
+            return tutor;
         }
 
         // PUT: api/Tutors/5
@@ -67,9 +64,22 @@ namespace DogtorAPI.Controllers
             {
                 return BadRequest();
             }
+            var existingTutor = await _context.Users.FindAsync(id.ToString());
+
+            if (existingTutor == null)
+            {
+                return NotFound();
+            }
+            existingTutor.UserName = tutor.Email;
+            existingTutor.Email = tutor.Email;
+            var result = await _userManager.UpdateAsync(existingTutor);
+
+            if (!result.Succeeded)
+            {
+                return StatusCode(500, result.Errors);
+            }
 
             _context.Entry(tutor).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
