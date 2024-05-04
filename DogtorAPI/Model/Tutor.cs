@@ -16,6 +16,9 @@
         public string Neighborhood { get; set; }
         public ICollection<Pet>? Pets { get; set; }
 
+        public ICollection<Consulta>? Consultas { get; set; }
+
+
         protected Tutor()
         {
             

@@ -86,7 +86,7 @@ namespace DogtorAPI.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(pet);
         }
 
         // POST: api/Pets
@@ -95,14 +95,15 @@ namespace DogtorAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Pet>> PostPet(CreatePetRequest pet)
         {
-          if (_context.Pet == null)
-          {
-              return Problem("Entity set 'DogtorAPIContext.Pet'  is null.");
-          }
-            _context.Pet.Add(Pet.CreatePetFromPetRequest(pet));
+            if (_context.Pet == null)
+            {
+                return Problem("Entity set 'DogtorAPIContext.Pet'  is null.");
+            }
+            var newPet = Pet.CreatePetFromPetRequest(pet);
+            _context.Pet.Add(newPet);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPet", new { id = Guid.NewGuid() }, pet);
+            return CreatedAtAction("GetPet", new { id = newPet.Id }, newPet); ;
         }
 
         // DELETE: api/Pets/5

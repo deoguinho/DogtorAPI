@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DogtorAPI.Migrations
 {
-    public partial class BitrhVete : Migration
+    public partial class Consultas : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -88,8 +88,7 @@ namespace DogtorAPI.Migrations
                     UF = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CRMV = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Foto_CRMV = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CPF = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Especialidade = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    CPF = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -211,6 +210,7 @@ namespace DogtorAPI.Migrations
                     Race = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Photo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TutorID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -222,6 +222,75 @@ namespace DogtorAPI.Migrations
                         principalTable: "Tutor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Especialidade",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VeterinarioID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Especialidade", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Especialidade_Veterinario_VeterinarioID",
+                        column: x => x.VeterinarioID,
+                        principalTable: "Veterinario",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VeterinarioFotos",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Link = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VeterinarioID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VeterinarioFotos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VeterinarioFotos_Veterinario_VeterinarioID",
+                        column: x => x.VeterinarioID,
+                        principalTable: "Veterinario",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Consulta",
+                columns: table => new
+                {
+                    ConsultaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Data = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Observacoes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VeterinarioId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TutorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Consulta", x => x.ConsultaId);
+                    table.ForeignKey(
+                        name: "FK_Consulta_Pet_PetId",
+                        column: x => x.PetId,
+                        principalTable: "Pet",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Consulta_Tutor_TutorId",
+                        column: x => x.TutorId,
+                        principalTable: "Tutor",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Consulta_Veterinario_VeterinarioId",
+                        column: x => x.VeterinarioId,
+                        principalTable: "Veterinario",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -264,9 +333,34 @@ namespace DogtorAPI.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Consulta_PetId",
+                table: "Consulta",
+                column: "PetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Consulta_TutorId",
+                table: "Consulta",
+                column: "TutorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Consulta_VeterinarioId",
+                table: "Consulta",
+                column: "VeterinarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Especialidade_VeterinarioID",
+                table: "Especialidade",
+                column: "VeterinarioID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Pet_TutorID",
                 table: "Pet",
                 column: "TutorID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VeterinarioFotos_VeterinarioID",
+                table: "VeterinarioFotos",
+                column: "VeterinarioID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -287,16 +381,25 @@ namespace DogtorAPI.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Pet");
+                name: "Consulta");
 
             migrationBuilder.DropTable(
-                name: "Veterinario");
+                name: "Especialidade");
+
+            migrationBuilder.DropTable(
+                name: "VeterinarioFotos");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Pet");
+
+            migrationBuilder.DropTable(
+                name: "Veterinario");
 
             migrationBuilder.DropTable(
                 name: "Tutor");

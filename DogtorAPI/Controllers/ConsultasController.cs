@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DogtorAPI.Data;
 using DogtorAPI.Model;
+using DogtorAPI.ViewModel.Consulta;
 
 namespace DogtorAPI.Controllers
 {
@@ -25,13 +26,39 @@ namespace DogtorAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Consulta>>> GetConsulta()
         {
-          if (_context.Consulta == null)
-          {
-              return NotFound();
-          }
-            return await _context.Consulta.ToListAsync();
+            if (_context.Consulta == null)
+            {
+                return NotFound();
+            }
+            var consultas = await _context.Consulta
+                              .Include(c => c.Tutor)
+                              .Include(c => c.Veterinario)
+                              .Include(c => c.Pet)
+                              .Select(c => new ConsultaDTO
+                              {
+                                  ConsultaId = c.ConsultaId,
+                                  Data = c.Data,
+                                  Observacoes = c.Observacoes,
+                                  TutorNome = c.Tutor.Name,
+                                  VeterinarioNome = c.Veterinario.Name,
+                                  PetNome = c.Pet.Name
+                                  // Adicione outras propriedades conforme necessário
+                              })
+                              .ToListAsync();
+
+            if (consultas == null || !consultas.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(consultas);
         }
 
+        [HttpGet("GetCountConsultas")]
+        public async Task<int> GetTotalConsultas()
+        {
+            return await _context.Consulta.CountAsync();
+        }
         // GET: api/Consultas/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Consulta>> GetConsulta(Guid id)
@@ -55,7 +82,7 @@ namespace DogtorAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutConsulta(Guid id, Consulta consulta)
         {
-            if (id != consulta.Id)
+            if (id != consulta.ConsultaId)
             {
                 return BadRequest();
             }
@@ -84,16 +111,16 @@ namespace DogtorAPI.Controllers
         // POST: api/Consultas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Consulta>> PostConsulta(Consulta consulta)
+        public async Task<ActionResult<Consulta>> PostConsulta(CreateConsultaRequest consulta)
         {
           if (_context.Consulta == null)
           {
               return Problem("Entity set 'DogtorAPIContext.Consulta'  is null.");
           }
-            _context.Consulta.Add(consulta);
+            _context.Consulta.Add(Consulta.CreateConsultaFromConsultaRequest(consulta));
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetConsulta", new { id = consulta.Id }, consulta);
+            return CreatedAtAction("GetConsulta", new { id = consulta.ConsultaId }, consulta);
         }
 
         // DELETE: api/Consultas/5
@@ -116,9 +143,10 @@ namespace DogtorAPI.Controllers
             return NoContent();
         }
 
+   
         private bool ConsultaExists(Guid id)
         {
-            return (_context.Consulta?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Consulta?.Any(e => e.ConsultaId == id)).GetValueOrDefault();
         }
     }
 }

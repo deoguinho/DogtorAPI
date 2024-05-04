@@ -26,6 +26,9 @@ namespace DogtorAPI.Data
 
         public DbSet<DogtorAPI.Model.VeterinarioFotos>? VeterinarioFotos { get; set; }
 
-        public DbSet<Consulta>? Consulta { get; set; }
+        public DbSet<DogtorAPI.Model.Consulta>? Consulta { get; set; }
+
+
+
     }
 }

@@ -11,6 +11,8 @@ namespace DogtorAPI.Model
         public string Description { get; set; }
         public string? Photo { get; set; } 
         public Guid TutorID { get; set; }
+        public ICollection<Consulta>? Consultas { get; set; }
+
         protected Pet()
         {
             

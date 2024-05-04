@@ -34,7 +34,7 @@ namespace DogtorAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(await _context.Tutor.Include(pets => pets.Pets).ToListAsync());
+            return Ok(await _context.Tutor.Include(pets => pets.Pets).Include(consultas => consultas.Consultas).ToListAsync());
         }
 
         // GET: api/Tutors/5

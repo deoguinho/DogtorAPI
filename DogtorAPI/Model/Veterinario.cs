@@ -22,6 +22,7 @@ namespace DogtorAPI.Model
         public string CPF { get; set; }
         public List<Especialidade>? Especialidade { get; set; }
         public List<VeterinarioFotos>? VeterinarioFotos { get; set; }
+        public ICollection<Consulta>? Consultas { get; set; }
 
         protected Veterinario()
         {
