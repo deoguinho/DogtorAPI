@@ -4,6 +4,7 @@ using DogtorAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DogtorAPI.Migrations
 {
     [DbContext(typeof(DogtorAPIContext))]
-    partial class DogtorAPIContextModelSnapshot : ModelSnapshot
+    [Migration("20240508134557_Avaliacoes")]
+    partial class Avaliacoes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,28 +34,17 @@ namespace DogtorAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("Nota")
                         .HasColumnType("int");
-
-                    b.Property<Guid>("TutorID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("VeterinarioID")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TutorID");
-
                     b.HasIndex("VeterinarioID");
 
-                    b.ToTable("Avaliacoes", (string)null);
+                    b.ToTable("Avaliacoes");
                 });
 
             modelBuilder.Entity("DogtorAPI.Model.Consulta", b =>
@@ -85,7 +76,7 @@ namespace DogtorAPI.Migrations
 
                     b.HasIndex("VeterinarioId");
 
-                    b.ToTable("Consulta", (string)null);
+                    b.ToTable("Consulta");
                 });
 
             modelBuilder.Entity("DogtorAPI.Model.Especialidade", b =>
@@ -105,7 +96,7 @@ namespace DogtorAPI.Migrations
 
                     b.HasIndex("VeterinarioID");
 
-                    b.ToTable("Especialidade", (string)null);
+                    b.ToTable("Especialidade");
                 });
 
             modelBuilder.Entity("DogtorAPI.Model.Pet", b =>
@@ -140,7 +131,7 @@ namespace DogtorAPI.Migrations
 
                     b.HasIndex("TutorID");
 
-                    b.ToTable("Pet", (string)null);
+                    b.ToTable("Pet");
                 });
 
             modelBuilder.Entity("DogtorAPI.Model.Tutor", b =>
@@ -188,16 +179,13 @@ namespace DogtorAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Photo")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tutor", (string)null);
+                    b.ToTable("Tutor");
                 });
 
             modelBuilder.Entity("DogtorAPI.Model.Veterinario", b =>
@@ -263,7 +251,7 @@ namespace DogtorAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Veterinario", (string)null);
+                    b.ToTable("Veterinario");
                 });
 
             modelBuilder.Entity("DogtorAPI.Model.VeterinarioFotos", b =>
@@ -283,7 +271,7 @@ namespace DogtorAPI.Migrations
 
                     b.HasIndex("VeterinarioID");
 
-                    b.ToTable("VeterinarioFotos", (string)null);
+                    b.ToTable("VeterinarioFotos");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -486,19 +474,13 @@ namespace DogtorAPI.Migrations
 
             modelBuilder.Entity("DogtorAPI.Model.Avaliacoes", b =>
                 {
-                    b.HasOne("DogtorAPI.Model.Tutor", "Tutor")
-                        .WithMany("Avaliacoes")
-                        .HasForeignKey("TutorID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DogtorAPI.Model.Veterinario", null)
-                        .WithMany("Avaliacoes")
+                    b.HasOne("DogtorAPI.Model.Veterinario", "Veterinario")
+                        .WithMany()
                         .HasForeignKey("VeterinarioID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Tutor");
+                    b.Navigation("Veterinario");
                 });
 
             modelBuilder.Entity("DogtorAPI.Model.Consulta", b =>
@@ -613,8 +595,6 @@ namespace DogtorAPI.Migrations
 
             modelBuilder.Entity("DogtorAPI.Model.Tutor", b =>
                 {
-                    b.Navigation("Avaliacoes");
-
                     b.Navigation("Consultas");
 
                     b.Navigation("Pets");
@@ -622,8 +602,6 @@ namespace DogtorAPI.Migrations
 
             modelBuilder.Entity("DogtorAPI.Model.Veterinario", b =>
                 {
-                    b.Navigation("Avaliacoes");
-
                     b.Navigation("Consultas");
 
                     b.Navigation("Especialidade");

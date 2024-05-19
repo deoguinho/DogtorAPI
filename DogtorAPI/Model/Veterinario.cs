@@ -23,6 +23,7 @@ namespace DogtorAPI.Model
         public List<Especialidade>? Especialidade { get; set; }
         public List<VeterinarioFotos>? VeterinarioFotos { get; set; }
         public ICollection<Consulta>? Consultas { get; set; }
+        public ICollection<Avaliacoes>? Avaliacoes { get; set; }
 
         protected Veterinario()
         {

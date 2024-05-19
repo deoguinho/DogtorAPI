@@ -9,6 +9,7 @@ using DogtorAPI.Data;
 using DogtorAPI.Model;
 using Microsoft.AspNetCore.Identity;
 using DogtorAPI.ViewModel.Veterinario;
+using DogtorAPI.ViewModel.Avaliacoes;
 
 namespace DogtorAPI.Controllers
 {
@@ -39,14 +40,41 @@ namespace DogtorAPI.Controllers
 
         // GET: api/Veterinarios/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Veterinario>> GetVeterinario(Guid id)
+        public async Task<ActionResult<VeterinarioResponse>> GetVeterinario(Guid id)
         {
             if (_context.Veterinario == null)
             {
                 return NotFound();
             }
-            var veterinario = await _context.Veterinario.Include(Especialidade => Especialidade.Especialidade).Include(VeterinarioFotos => VeterinarioFotos.VeterinarioFotos)
-               .FirstAsync(x => x.Id == id);
+
+            var mediaAvaliacoes = await CalcularMediaAvaliacoes(id);
+
+            var veterinario = await _context.Veterinario
+                                         .Where(v => v.Id == id)
+                                         .Include(v => v.Especialidade)
+                                         .Include(v => v.VeterinarioFotos)
+                                         .Include(v => v.Avaliacoes)
+                                         .Select(v => new VeterinarioResponse
+                                         {
+                                             Id = v.Id,
+                                             Name = v.Name,
+                                             Email = v.Email,
+                                             Birth = v.Birth,
+                                             Phone = v.Phone,
+                                             Cep = v.Cep,
+                                             Street = v.Street,
+                                             Number = v.Number,
+                                             City = v.City,
+                                             Complement = v.Complement,
+                                             Neighborhood = v.Neighborhood,
+                                             UF = v.UF,
+                                             CRMV = v.CRMV,
+                                             CPF = v.CPF,
+                                             MediaAvaliacoes = Math.Round(mediaAvaliacoes),
+                                             Especialidades = v.Especialidade,
+                                             VeterinarioFotos = v.VeterinarioFotos
+                                         }).FirstOrDefaultAsync();
+
 
 
             if (veterinario == null)
@@ -60,14 +88,25 @@ namespace DogtorAPI.Controllers
         // PUT: api/Veterinarios/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVeterinario(Guid id, Veterinario veterinario)
+        public async Task<IActionResult> PutVeterinario(Guid id, PutRequestVeterinario veterinario)
         {
-            if (id != veterinario.Id)
+            if (_context.Veterinario == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(veterinario).State = EntityState.Modified;
+            if (id != veterinario.Id)
+            {
+                return BadRequest("ID do caminho não coincide com o ID do corpo da requisição.");
+            }
+
+            var existingVeterinario = await _context.Veterinario.FindAsync(id);
+            if (existingVeterinario == null)
+            {
+                return NotFound();
+            }
+            existingVeterinario.Name = veterinario.Name;
+            _context.Entry(existingVeterinario).State = EntityState.Modified;
 
             try
             {
@@ -75,7 +114,7 @@ namespace DogtorAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!VeterinarioExists(id))
+                if (!VeterinarioPutExists(id))
                 {
                     return NotFound();
                 }
@@ -86,6 +125,16 @@ namespace DogtorAPI.Controllers
             }
 
             return NoContent();
+        }
+
+        [NonAction]
+        private bool VeterinarioPutExists(Guid id)
+        {
+            if (_context.Veterinario == null)
+            {
+                return false;
+            }
+            return _context.Veterinario.Any(e => e.Id == id);
         }
 
         // POST: api/Veterinarios
@@ -144,6 +193,28 @@ namespace DogtorAPI.Controllers
 
             return NoContent();
         }
+
+        [NonAction]
+        public async Task<double> CalcularMediaAvaliacoes(Guid veterinarioId)
+        {
+            if (_context.Avaliacoes == null)
+            {
+                return 0;
+            }
+            var notas = await _context.Avaliacoes
+                                      .Where(a => a.VeterinarioID == veterinarioId)
+                                      .Select(a => a.Nota)
+                                      .ToListAsync();
+
+            if (notas.Count == 0)
+            {
+                return 0; // Retorna 0 se não houver avaliações
+            }
+
+            return notas.Average();
+        }
+
+
 
         private bool VeterinarioExists(Guid id)
         {

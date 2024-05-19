@@ -58,20 +58,23 @@ namespace DogtorAPI.Controllers
         // PUT: api/Tutors/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTutor(Guid id, Tutor tutor)
+        public async Task<IActionResult> PutTutor(Guid id, PutTutorRequest tutor)
         {
             if (id != tutor.Id)
             {
                 return BadRequest();
             }
+
             var existingTutor = await _context.Users.FindAsync(id.ToString());
 
             if (existingTutor == null)
             {
                 return NotFound();
             }
+
             existingTutor.UserName = tutor.Email;
             existingTutor.Email = tutor.Email;
+
             var result = await _userManager.UpdateAsync(existingTutor);
 
             if (!result.Succeeded)
@@ -79,14 +82,13 @@ namespace DogtorAPI.Controllers
                 return StatusCode(500, result.Errors);
             }
 
-            _context.Entry(tutor).State = EntityState.Modified;
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TutorExists(id))
+                if (!TutorExistsPut(id))
                 {
                     return NotFound();
                 }
@@ -97,6 +99,11 @@ namespace DogtorAPI.Controllers
             }
 
             return NoContent();
+        }
+        [NonAction]
+        private bool TutorExistsPut(Guid id)
+        {
+            return _context.Users.Any(e => e.Id == id.ToString());
         }
 
         // POST: api/Tutors
@@ -116,10 +123,10 @@ namespace DogtorAPI.Controllers
      
                 var userId = await Register(request.Email, request.Password);
             
-                var tutor = new Tutor(userId, request.Name, request.Email, request.Birth, request.CPF, request.Phone, request.Cep, request.Street, request.Number, request.City, request.Complement, request.Neighborhood);
+                var tutor = new Tutor(userId, request.Name, request.Email, request.Birth, request.CPF, request.Phone, request.Cep, request.Street, request.Number, request.City, request.Complement, request.Neighborhood, request.Photo);
 
                 await _context.Tutor.AddAsync(tutor);
-
+                
                 await _context.SaveChangesAsync();
 
                 return CreatedAtAction("GetTutor", new { id = tutor.Id }, tutor);

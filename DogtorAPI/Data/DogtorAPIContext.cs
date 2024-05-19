@@ -28,7 +28,35 @@ namespace DogtorAPI.Data
 
         public DbSet<DogtorAPI.Model.Consulta>? Consulta { get; set; }
 
+        public DbSet<DogtorAPI.Model.Avaliacoes>? Avaliacoes { get; set; }
 
+        public override int SaveChanges()
+        {
+            UpdateTimestamps();
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            UpdateTimestamps();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void UpdateTimestamps()
+        {
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.Entity is Avaliacoes &&
+                            (e.State == EntityState.Added || e.State == EntityState.Modified));
+
+            foreach (var entry in entries)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    ((Avaliacoes)entry.Entity).CreatedAt = DateTime.UtcNow;
+                }
+                ((Avaliacoes)entry.Entity).UpdatedAt = DateTime.UtcNow;
+            }
+        }
 
     }
 }

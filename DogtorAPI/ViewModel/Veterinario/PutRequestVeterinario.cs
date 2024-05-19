@@ -1,12 +1,13 @@
-﻿namespace DogtorAPI.ViewModel.Tutor
+﻿using DogtorAPI.Model;
+
+namespace DogtorAPI.ViewModel.Veterinario
 {
-    public class CreateTutorRequest
+    public class PutRequestVeterinario
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; }
         public string Birth { get; set; }
-        public string CPF { get; set; }
         public string Phone { get; set; }
         public string Cep { get; set; }
         public string Street { get; set; }
@@ -14,6 +15,7 @@
         public string City { get; set; }
         public string Complement { get; set; }
         public string Neighborhood { get; set; }
-        public string Photo { get; set; }
+        public string UF { get; set; }
+        public string CPF { get; set; }
     }
 }
