@@ -27,16 +27,28 @@ namespace DogtorAPI.Controllers
 
         // GET: api/Veterinarios
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Veterinario>>> GetVeterinario()
+        public async Task<ActionResult<IEnumerable<GetAllVeterinariosResponse>>> GetVeterinario()
         {
             if (_context.Veterinario == null)
             {
                 return NotFound();
             }
 
-            return Ok(await _context.Veterinario.Include(Especialidade => Especialidade.Especialidade).ToListAsync());
+            var veterinarios = await _context.Veterinario
+                .Include(v => v.Especialidade)
+                .Include(v => v.Avaliacoes)
+                .Select(v => new GetAllVeterinariosResponse
+                {
+                    Id = v.Id,
+                    Name = v.Name,
+                    Especialidades = v.Especialidade,
+                    MediaAvaliacoes = v.Avaliacoes.Any() ? Math.Floor(v.Avaliacoes.Average(a => a.Nota)) : 0, // Calcula a média das avaliações
+                    QuantidadeAvaliacoes = v.Avaliacoes.Count() // Conta a quantidade de avaliações
+                }).ToListAsync();
 
+            return Ok(veterinarios);
         }
+
 
         // GET: api/Veterinarios/5
         [HttpGet("{id}")]
@@ -70,7 +82,7 @@ namespace DogtorAPI.Controllers
                                              UF = v.UF,
                                              CRMV = v.CRMV,
                                              CPF = v.CPF,
-                                             MediaAvaliacoes = Math.Round(mediaAvaliacoes),
+                                             MediaAvaliacoes = Math.Floor(mediaAvaliacoes),
                                              Especialidades = v.Especialidade,
                                              VeterinarioFotos = v.VeterinarioFotos
                                          }).FirstOrDefaultAsync();
