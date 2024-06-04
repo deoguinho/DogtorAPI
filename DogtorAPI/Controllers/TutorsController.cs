@@ -9,6 +9,7 @@ using DogtorAPI.Data;
 using DogtorAPI.Model;
 using Microsoft.AspNetCore.Identity;
 using DogtorAPI.ViewModel.Tutor;
+using static DogtorAPI.ViewModel.Tutor.GetAllTutorResponse;
 
 namespace DogtorAPI.Controllers
 {
@@ -27,14 +28,35 @@ namespace DogtorAPI.Controllers
 
         // GET: api/Tutors
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tutor>>> GetTutor()
+ 
+
+        public async Task<ActionResult<IEnumerable<TutorDto>>> GetTutor()
         {
             if (_context.Tutor == null)
             {
-                return NotFound();
+                return BadRequest(); // Retorna 400 quando _context.Tutor é nulo
             }
 
-            return Ok(await _context.Tutor.Include(pets => pets.Pets).Include(consultas => consultas.Consultas).ToListAsync());
+            var tutores = await _context.Tutor
+                                        .Include(t => t.Pets)
+                                        .Select(t => new TutorDto
+                                        {
+                                            Id = t.Id,
+                                            Nome = t.Name,
+                                            Pets = t.Pets.Select(p => new PetDto
+                                            {
+                                                Id = p.Id,
+                                                Nome = p.Name
+                                            }).ToList()
+                                        })
+                                        .ToListAsync();
+
+            if (!tutores.Any())
+            {
+                return NoContent(); // Retorna 204 quando a lista de tutores está vazia
+            }
+
+            return Ok(tutores); // Retorna 200 com a lista de tutores
         }
 
         // GET: api/Tutors/5
@@ -123,7 +145,7 @@ namespace DogtorAPI.Controllers
      
                 var userId = await Register(request.Email, request.Password);
             
-                var tutor = new Tutor(userId, request.Name, request.Email, request.Birth, request.CPF, request.Phone, request.Cep, request.Street, request.Number, request.City, request.Complement, request.Neighborhood, request.Photo);
+                var tutor = new Tutor(userId, request.Name, request.Email, request.Birth, request.CPF, request.Phone, request.Cep, request.Street, request.Number, request.City, request.Complement, request.Neighborhood);
 
                 await _context.Tutor.AddAsync(tutor);
                 

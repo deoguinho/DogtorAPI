@@ -58,5 +58,7 @@ namespace DogtorAPI.Data
             }
         }
 
+        public DbSet<DogtorAPI.Model.Admin>? Admin { get; set; }
+
     }
 }

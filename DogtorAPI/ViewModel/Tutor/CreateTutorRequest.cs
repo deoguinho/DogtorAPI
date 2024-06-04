@@ -14,6 +14,6 @@
         public string City { get; set; }
         public string Complement { get; set; }
         public string Neighborhood { get; set; }
-        public string Photo { get; set; }
+        public string? Photo { get; set; }
     }
 }

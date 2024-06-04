@@ -14,7 +14,6 @@ namespace DogtorAPI.Model
         public Guid VeterinarioId { get; set; }
         public Guid TutorId { get; set; }
         public Guid PetId { get; set; }
-
         // Propriedades de navegação
         public Veterinario? Veterinario { get; set; }
         public Tutor? Tutor { get; set; }

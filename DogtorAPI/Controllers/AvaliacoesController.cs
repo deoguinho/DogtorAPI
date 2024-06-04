@@ -41,7 +41,7 @@ namespace DogtorAPI.Controllers
         {
             if (_context.Avaliacoes == null)
             {
-                return NotFound();
+                return BadRequest(); // Retorna 400 quando não há avaliações
             }
 
             // Verifique se existem avaliações para o Veterinário com o ID fornecido
@@ -59,15 +59,15 @@ namespace DogtorAPI.Controllers
                                               CreatedAt = a.CreatedAt // Adicione CreatedAt à seleção
                                           });
 
-            // Para gawrantir que a ordenação seja feita no banco de dados, adicione OrderBy antes do ToListAsync
+            // Para garantir que a ordenação seja feita no banco de dados, adicione OrderBy antes do ToListAsync
             var avaliacoes = await avaliacoesQuery.OrderBy(a => a.CreatedAt).ToListAsync();
 
-            if (avaliacoes == null || !avaliacoes.Any())
+            if (!avaliacoes.Any())
             {
-                return NotFound();
+                return NoContent(); // Retorna 204 quando há avaliações mas a lista está vazia
             }
 
-            return avaliacoes;
+            return Ok(avaliacoes); // Retorna 200 com a lista de avaliações
         }
 
         [HttpGet("GetMedia/{id}")]

@@ -24,7 +24,7 @@
         {
             
         }
-        public Tutor(Guid id, string name, string email, string birth, string cpf, string phone, string cep, string street, int number, string city, string complement, string neighborhood, string photo)
+        public Tutor(Guid id, string name, string email, string birth, string cpf, string phone, string cep, string street, int number, string city, string complement, string neighborhood)
         {
             Id = id;
             Name = name;
@@ -38,7 +38,6 @@
             City = city;
             Complement = complement;
             Neighborhood = neighborhood;
-            Photo = photo;
         }
     }
 }

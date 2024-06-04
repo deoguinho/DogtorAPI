@@ -10,6 +10,8 @@ using DogtorAPI.Model;
 using Microsoft.AspNetCore.Identity;
 using DogtorAPI.ViewModel.Veterinario;
 using DogtorAPI.ViewModel.Avaliacoes;
+using System.Runtime.ConstrainedExecution;
+using System.IO;
 
 namespace DogtorAPI.Controllers
 {
@@ -41,9 +43,22 @@ namespace DogtorAPI.Controllers
                 {
                     Id = v.Id,
                     Name = v.Name,
+                    Email = v.Email,
+                    Birth = v.Birth,
+                    Phone = v.Phone,
+                    Cep = v.Cep,
+                    Street = v.Street,
+                    Number = v.Number,
+                    City = v.City,
+                    Complement = v.Complement,
+                    Neighborhood = v.Neighborhood,
+                    UF = v.UF,
+                    CRMV = v.CRMV,
+                    CPF = v.CPF,
                     Especialidades = v.Especialidade,
                     MediaAvaliacoes = v.Avaliacoes.Any() ? Math.Floor(v.Avaliacoes.Average(a => a.Nota)) : 0, // Calcula a média das avaliações
-                    QuantidadeAvaliacoes = v.Avaliacoes.Count() // Conta a quantidade de avaliações
+                    QuantidadeAvaliacoes = v.Avaliacoes.Count(), // Conta a quantidade de avaliações
+                    Status = v.Status
                 }).ToListAsync();
 
             return Ok(veterinarios);
