@@ -55,12 +55,24 @@ namespace DogtorAPI.Controllers
             }
 
             var veterinario = await _context.Veterinario.FindAsync(Guid.Parse(identityUser.Id));
+         
             if (veterinario != null)
             {
+                if (veterinario.Status == 0)
+                {
+                    return Unauthorized(new { Message = "Veterinario ainda não foi aceito." });
+                }
+
+                if(veterinario.Status == 2)
+                {
+                    return Unauthorized(new { Message = "Veterinario não teve seu cadastro aceito na plataforma." });
+                }
+
                 return Ok(new { Token = token, Message = "Success.", User_ID = identityUser.Id, Permission = "veterinario"});
 
             }
             var admin = await _context.Admin.FindAsync(Guid.Parse(identityUser.Id));
+            
             if (admin != null)
             {
                 return Ok(new { Token = token, Message = "Success.", User_ID = identityUser.Id, Permission = "Admin" });

@@ -26,11 +26,25 @@ namespace DogtorAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Admin>>> GetAdmin()
         {
-          if (_context.Admin == null)
-          {
-              return NotFound();
-          }
+            if (_context.Admin == null)
+            {
+                return NotFound();
+            }
+
+
             return await _context.Admin.ToListAsync();
+        }
+
+        [HttpGet("Veterinarios")]
+        public async Task<ActionResult<IEnumerable<Veterinario>>> GetVeterinarios()
+        {
+            if (_context.Veterinario == null)
+            {
+                return NotFound();
+            }
+            int newVetStatus = 0;
+            var veterinarios = await _context.Veterinario.Where(v => v.Status == newVetStatus).ToListAsync();
+            return veterinarios;
         }
 
         // GET: api/Admins/5
@@ -137,7 +151,7 @@ namespace DogtorAPI.Controllers
             }
 
             // Alterar o status para true
-            veterinario.Status = true;
+            veterinario.Status = 1;
 
             // Salvar as mudanças no banco de dados
             await _context.SaveChangesAsync();
@@ -158,7 +172,7 @@ namespace DogtorAPI.Controllers
             }
 
             // Alterar o status para true
-            veterinario.Status = true;
+            veterinario.Status = 2;
 
             // Salvar as mudanças no banco de dados
             await _context.SaveChangesAsync();

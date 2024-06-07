@@ -20,7 +20,7 @@ namespace DogtorAPI.Model
         public string CRMV { get; set; }
         public string Foto_CRMV { get; set; }
         public string CPF { get; set; }
-        public bool Status { get; set; }
+        public int Status { get; set; }
         public List<Especialidade>? Especialidade { get; set; }
         public List<VeterinarioFotos>? VeterinarioFotos { get; set; }
         public ICollection<Consulta>? Consultas { get; set; }
@@ -49,7 +49,7 @@ namespace DogtorAPI.Model
             CRMV = crmv;
             Foto_CRMV = foto_CRMV;
             CPF = cpf;
-            Status = false;
+            Status = 0;
         }
     }
 }

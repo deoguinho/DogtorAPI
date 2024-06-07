@@ -20,7 +20,7 @@ namespace DogtorAPI.ViewModel.Veterinario
         public string CPF { get; set; }
         public int QuantidadeAvaliacoes { get; set; }
         public double MediaAvaliacoes { get; set; }
-        public bool Status { get; set; }
+        public int Status { get; set; }
         public List<Especialidade> Especialidades { get; set; }
         public List<VeterinarioFotos> VeterinarioFotos { get; set; }
     }
