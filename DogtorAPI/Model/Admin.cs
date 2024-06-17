@@ -18,17 +18,15 @@ namespace DogtorAPI.Model
 
         }
 
-        public Admin(string name, string email, string password)
+        public Admin(Guid id, string name, string email, string password)
         {
+            ID = id;
             Name = name;
             Email = email;
             Password = password;
         }
 
-        public static Admin CreateAdminRequest(AdminRequest admin)
-        {
-            return new(admin.Name, admin.Email, admin.Password);
-        }
+  
     }
 
  

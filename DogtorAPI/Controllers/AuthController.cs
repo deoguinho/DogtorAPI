@@ -26,7 +26,7 @@ namespace DogtorAPI.Controllers
         [HttpPost]
         [Route("Login")]
         //[FromBody] colocar antes do login request!
-        public async Task<IActionResult> Login([FromBody]LoginRequest loginRequest)
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
             
             IdentityUser identityUser;
@@ -71,6 +71,7 @@ namespace DogtorAPI.Controllers
                 return Ok(new { Token = token, Message = "Success.", User_ID = identityUser.Id, Permission = "veterinario"});
 
             }
+
             var admin = await _context.Admin.FindAsync(Guid.Parse(identityUser.Id));
             
             if (admin != null)

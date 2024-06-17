@@ -12,10 +12,14 @@ namespace DogtorAPI.Model
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
+        //Resposta
+        public string Resposta { get; set; }
+        public DateTime? DataResposta { get; set; } // Data opcional para a resposta
+
         //Referencia do Tutor
         public Guid TutorID { get; set; }
         public Tutor? Tutor { get; set; }
-
+        public Veterinario? Veterinario { get; set; }
 
         protected Avaliacoes()
         {

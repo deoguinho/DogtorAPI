@@ -19,6 +19,8 @@ namespace DogtorAPI.ViewModel.Veterinario
         public string UF { get; set; }
         public string CRMV { get; set; }
         public string CPF { get; set; }
+        public string? Photo { get; set; }
+        public string? BackgroundPhoto { get; set; }
         public List<Especialidade> Especialidades { get; set; }
         public List<VeterinarioFotos> VeterinarioFotos { get; set; }
     }

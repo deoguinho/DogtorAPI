@@ -48,6 +48,7 @@ namespace DogtorAPI.Controllers
             var avaliacoesQuery = _context.Avaliacoes
                                           .Where(a => a.VeterinarioID == id)
                                           .Include(a => a.Tutor)
+                                          .Include(v => v.Veterinario)
                                           .Select(a => new AvaliacaoByIDResponse
                                           {
                                               Id = a.Id,
@@ -56,6 +57,9 @@ namespace DogtorAPI.Controllers
                                               TutorID = a.TutorID,
                                               TutorName = a.Tutor.Name,
                                               TutorPhoto = a.Tutor.Photo,
+                                              VeterinarioID = a.VeterinarioID,
+                                              VeterinarioName = a.Veterinario.Name,
+                                              VeterinarioPhoto = a.Veterinario.Photo,
                                               CreatedAt = a.CreatedAt // Adicione CreatedAt à seleção
                                           });
 
@@ -186,6 +190,40 @@ namespace DogtorAPI.Controllers
             }
 
             return notas.Average();
+        }
+        public class ResponderAvaliacaoRequest
+        {
+            public string Resposta { get; set; }
+        }
+
+        [HttpPost("{id}/responder")]
+        public async Task<IActionResult> ResponderAvaliacao(Guid id, [FromBody] ResponderAvaliacaoRequest request)
+        {
+            var sucesso = await ResponderAvaliacaoAsync(id, request.Resposta);
+            if (!sucesso)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        [NonAction]
+        public async Task<bool> ResponderAvaliacaoAsync(Guid avaliacaoId, string resposta)
+        {
+            var avaliacao = await _context.Avaliacoes.FindAsync(avaliacaoId);
+            if (avaliacao == null)
+            {
+                return false; // Avaliação não encontrada
+            }
+
+            avaliacao.Resposta = resposta;
+            avaliacao.DataResposta = DateTime.UtcNow;
+
+            _context.Avaliacoes.Update(avaliacao);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
 
         private bool AvaliacoesExists(Guid id)

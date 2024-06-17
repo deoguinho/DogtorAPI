@@ -19,6 +19,8 @@ namespace DogtorAPI.Model
         public string UF { get; set; }
         public string CRMV { get; set; }
         public string Foto_CRMV { get; set; }
+        public string? Photo { get; set; }
+        public string? BackgroundPhoto { get; set; }
         public string CPF { get; set; }
         public int Status { get; set; }
         public List<Especialidade>? Especialidade { get; set; }

@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using DogtorAPI.Data;
 using DogtorAPI.Model;
 using DogtorAPI.ViewModel.Admin;
+using Microsoft.AspNetCore.Identity;
+using DogtorAPI.ViewModel.Veterinario;
 
 namespace DogtorAPI.Controllers
 {
@@ -16,10 +18,12 @@ namespace DogtorAPI.Controllers
     public class AdminsController : ControllerBase
     {
         private readonly DogtorAPIContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public AdminsController(DogtorAPIContext context)
+        public AdminsController(DogtorAPIContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: api/Admins
@@ -99,19 +103,27 @@ namespace DogtorAPI.Controllers
         // POST: api/Admins
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Admin>> PostAdmin(AdminRequest request)
+        public async Task<ActionResult<Veterinario>> PostAdmin(AdminRequest request)
         {
-          if (_context.Admin == null)
-          {
-              return Problem("Entity set 'DogtorAPIContext.Admin'  is null.");
-          }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var admin = new Admin(request.Name, request.Email, request.Password);
+            var existingAdmin = await _context.Admin.FirstOrDefaultAsync(x => x.Email == request.Email);
+
+            if (existingAdmin != null)
+                return BadRequest("Já possui um registro com este email");
+
+            var userId = await Register(request.Email, request.Password);
+
+            var admin = new Admin(userId, request.Name, request.Email, request.Password);
+
             _context.Admin.Add(admin);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAdmin", new { id = new Guid() }, admin);
+            return CreatedAtAction("GetAdmin", new { id = userId }, admin);
         }
+
+
 
         [HttpPost("{id}/aceitar")]
         public async Task<IActionResult> AceitarVeterinario(Guid id)
@@ -235,6 +247,25 @@ namespace DogtorAPI.Controllers
                     NumeroDePets = g.Count()
                 })
                 .ToListAsync();
+        }
+        private async Task<Guid> Register(string email, string password)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+                return Guid.Parse(user.Id);
+
+            var identityUser = new IdentityUser() { UserName = email, Email = email };
+            var result = await _userManager.CreateAsync(identityUser, password);
+
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException("Erro ao cadastrar usuário!");
+            }
+
+            var newUser = await _userManager.FindByEmailAsync(email);
+
+            return Guid.Parse(newUser.Id);
         }
         private bool AdminExists(Guid id)
         {

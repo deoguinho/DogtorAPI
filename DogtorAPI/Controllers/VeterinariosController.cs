@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +12,7 @@ using DogtorAPI.ViewModel.Veterinario;
 using DogtorAPI.ViewModel.Avaliacoes;
 using System.Runtime.ConstrainedExecution;
 using System.IO;
+using DogtorAPI.ViewModel;
 
 namespace DogtorAPI.Controllers
 {
@@ -54,14 +55,17 @@ namespace DogtorAPI.Controllers
                     Neighborhood = v.Neighborhood,
                     UF = v.UF,
                     CRMV = v.CRMV,
+                    Foto_CRMV = v.Foto_CRMV,
+                    Photo = v.Photo,
+                    BackgroundPhoto = v.BackgroundPhoto,
                     CPF = v.CPF,
                     Especialidades = v.Especialidade,
                     MediaAvaliacoes = v.Avaliacoes.Any() ? Math.Floor(v.Avaliacoes.Average(a => a.Nota)) : 0, // Calcula a média das avaliações
                     QuantidadeAvaliacoes = v.Avaliacoes.Count(), // Conta a quantidade de avaliações
-                    Status = v.Status
+                    Status = Convert.ToInt32(v.Status)
                 }).ToListAsync();
 
-            return Ok(veterinarios);
+            return Ok(veterinarios);    
         }
 
 
@@ -97,6 +101,8 @@ namespace DogtorAPI.Controllers
                                              UF = v.UF,
                                              CRMV = v.CRMV,
                                              CPF = v.CPF,
+                                             Photo = v.Photo,
+                                             BackgroundPhoto = v.BackgroundPhoto,
                                              MediaAvaliacoes = Math.Floor(mediaAvaliacoes),
                                              Especialidades = v.Especialidade,
                                              VeterinarioFotos = v.VeterinarioFotos
@@ -153,6 +159,8 @@ namespace DogtorAPI.Controllers
 
             return NoContent();
         }
+
+
 
         [NonAction]
         private bool VeterinarioPutExists(Guid id)
@@ -241,8 +249,39 @@ namespace DogtorAPI.Controllers
             return notas.Average();
         }
 
+        [HttpPut("{id}/update-image-links")]
+        public async Task<IActionResult> UpdateImageLinks(Guid id, [FromBody] UpdateImageLinksRequest request)
+        {
+            var result = await UpdateImageLinksAsync(id, request.PhotoLink, request.BackgroundPhotoLink);
+            if (!result)
+            {
+                return NotFound();
+            }
 
+            return NoContent();
+        }
+        [NonAction]
+        public async Task<bool> UpdateImageLinksAsync(Guid veterinarioId, string photoLink, string backgroundPhotoLink)
+        {
+            var veterinario = await _context.Veterinario.FindAsync(veterinarioId);
+            if (veterinario == null)
+            {
+                return false;
+            }
 
+            if (!string.IsNullOrEmpty(photoLink))
+            {
+                veterinario.Photo = photoLink;
+            }
+
+            if (!string.IsNullOrEmpty(backgroundPhotoLink))
+            {
+                veterinario.BackgroundPhoto = backgroundPhotoLink;
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
         private bool VeterinarioExists(Guid id)
         {
             return (_context.Veterinario?.Any(e => e.Id == id)).GetValueOrDefault();

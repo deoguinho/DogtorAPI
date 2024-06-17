@@ -17,6 +17,9 @@ namespace DogtorAPI.ViewModel.Veterinario
         public string Neighborhood { get; set; }
         public string UF { get; set; }
         public string CRMV { get; set; }
+        public string Foto_CRMV { get; set; }
+        public string Photo { get; set; }
+        public string BackgroundPhoto { get; set; }
         public string CPF { get; set; }
         public int QuantidadeAvaliacoes { get; set; }
         public double MediaAvaliacoes { get; set; }

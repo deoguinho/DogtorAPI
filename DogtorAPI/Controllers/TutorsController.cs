@@ -10,6 +10,7 @@ using DogtorAPI.Model;
 using Microsoft.AspNetCore.Identity;
 using DogtorAPI.ViewModel.Tutor;
 using static DogtorAPI.ViewModel.Tutor.GetAllTutorResponse;
+using DogtorAPI.ViewModel;
 
 namespace DogtorAPI.Controllers
 {
@@ -28,8 +29,6 @@ namespace DogtorAPI.Controllers
 
         // GET: api/Tutors
         [HttpGet]
- 
-
         public async Task<ActionResult<IEnumerable<TutorDto>>> GetTutor()
         {
             if (_context.Tutor == null)
@@ -42,7 +41,19 @@ namespace DogtorAPI.Controllers
                                         .Select(t => new TutorDto
                                         {
                                             Id = t.Id,
-                                            Nome = t.Name,
+                                            Name = t.Name,
+                                            Email = t.Email,
+                                            Birth = t.Birth,
+                                            CPF = t.CPF,
+                                            Phone = t.Phone,
+                                            Cep = t.Cep,
+                                            Street = t.Street,
+                                            Number = t.Number,  
+                                            City = t.City,
+                                            Complement = t.Complement,
+                                            Neighborhood = t.Neighborhood,
+                                            Photo = t.Photo,
+                                            BackgroundPhoto = t.BackgroundPhoto,
                                             Pets = t.Pets.Select(p => new PetDto
                                             {
                                                 Id = p.Id,
@@ -80,48 +91,53 @@ namespace DogtorAPI.Controllers
         // PUT: api/Tutors/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTutor(Guid id, PutTutorRequest tutor)
+        public async Task<IActionResult> PutTutor(Guid id, PutTutorRequest tutorRequest)
         {
-            if (id != tutor.Id)
+            if (id != tutorRequest.Id)
             {
                 return BadRequest();
             }
 
-            var existingTutor = await _context.Users.FindAsync(id.ToString());
-
-            if (existingTutor == null)
-            {
-                return NotFound();
-            }
-
-            existingTutor.UserName = tutor.Email;
-            existingTutor.Email = tutor.Email;
-
-            var result = await _userManager.UpdateAsync(existingTutor);
-
-            if (!result.Succeeded)
-            {
-                return StatusCode(500, result.Errors);
-            }
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TutorExistsPut(id))
+                // Procura o Tutor no contexto do Entity Framework Core
+                var existingTutor = await _context.Tutor.FindAsync(id);
+
+                if (existingTutor == null)
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                // Atualiza propriedades do Tutor com base nos dados recebidos na requisição
+                existingTutor.Name = tutorRequest.Name;
+                existingTutor.Email = tutorRequest.Email;
+                existingTutor.Phone = tutorRequest.Phone;
+                // Atualiza outras propriedades conforme necessário
+
+                // Atualiza também o usuário relacionado na tabela Users, se necessário
+                var existingUser = await _context.Users.FindAsync(existingTutor.Id);
+
+                if (existingUser == null)
+                {
+                    return NotFound("Usuário associado ao tutor não encontrado.");
+                }
+
+                existingUser.UserName = tutorRequest.Email;
+                existingUser.Email = tutorRequest.Email;
+
+                // Salva as mudanças no contexto do Entity Framework Core
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro interno ao tentar atualizar o tutor.");
+            }
         }
+
+
+
         [NonAction]
         private bool TutorExistsPut(Guid id)
         {
@@ -202,6 +218,42 @@ namespace DogtorAPI.Controllers
             var newUser = await _userManager.FindByEmailAsync(email);
 
             return Guid.Parse(newUser.Id);
+        }
+
+        [HttpPut("{id}/images")]
+        public async Task<IActionResult> UpdateImageLinks(Guid id, [FromBody] UpdateImageLinksRequest request)
+        {
+            var result = await UpdateImageLinksAsync(id, request.PhotoLink, request.BackgroundPhotoLink);
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        [NonAction]
+        public async Task<bool> UpdateImageLinksAsync(Guid tutorId, string photoLink, string backgroundPhotoLink)
+        {
+
+            var tutor = await _context.Tutor.FindAsync(tutorId);
+            if (tutor == null)
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(photoLink))
+            {
+                tutor.Photo = photoLink;
+            }
+
+            if (!string.IsNullOrEmpty(backgroundPhotoLink))
+            {
+                tutor.BackgroundPhoto = backgroundPhotoLink;
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

@@ -15,6 +15,7 @@
         public string Complement { get; set; }
         public string Neighborhood { get; set; }
         public string? Photo { get; set; }
+        public string? BackgroundPhoto { get; set; }
         public ICollection<Pet>? Pets { get; set; }
         public ICollection<Consulta>? Consultas { get; set; }
         public ICollection<Avaliacoes>? Avaliacoes { get; set; }
