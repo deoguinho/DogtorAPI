@@ -91,51 +91,74 @@ namespace DogtorAPI.Controllers
         // PUT: api/Tutors/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTutor(Guid id, PutTutorRequest tutorRequest)
+        public async Task<IActionResult> PutTutor(Guid id, [FromBody] PutTutorRequest tutorDto)
         {
-            if (id != tutorRequest.Id)
+            if (id != tutorDto.Id)
             {
                 return BadRequest();
             }
 
             try
             {
-                // Procura o Tutor no contexto do Entity Framework Core
-                var existingTutor = await _context.Tutor.FindAsync(id);
+                var tutor = await _context.Tutor.FirstOrDefaultAsync(t => t.Id == id);
 
-                if (existingTutor == null)
+                if (tutor == null)
                 {
                     return NotFound();
                 }
 
                 // Atualiza propriedades do Tutor com base nos dados recebidos na requisição
-                existingTutor.Name = tutorRequest.Name;
-                existingTutor.Email = tutorRequest.Email;
-                existingTutor.Phone = tutorRequest.Phone;
-                // Atualiza outras propriedades conforme necessário
+                if (!string.IsNullOrEmpty(tutorDto.Name))
+                    tutor.Name = tutorDto.Name;
+                if (!string.IsNullOrEmpty(tutorDto.Email))
+                    tutor.Email = tutorDto.Email;
+                if (!string.IsNullOrEmpty(tutorDto.Birth))
+                    tutor.Birth = tutorDto.Birth;
+                if (!string.IsNullOrEmpty(tutorDto.CPF))
+                    tutor.CPF = tutorDto.CPF;
+                if (!string.IsNullOrEmpty(tutorDto.Phone))
+                    tutor.Phone = tutorDto.Phone;
+                if (!string.IsNullOrEmpty(tutorDto.Cep))
+                    tutor.Cep = tutorDto.Cep;
+                if (!string.IsNullOrEmpty(tutorDto.Street))
+                    tutor.Street = tutorDto.Street;
+                if (tutorDto.Number != 0)
+                    tutor.Number = tutorDto.Number;
+                if (!string.IsNullOrEmpty(tutorDto.City))
+                    tutor.City = tutorDto.City;
+                if (!string.IsNullOrEmpty(tutorDto.Complement))
+                    tutor.Complement = tutorDto.Complement;
+                if (!string.IsNullOrEmpty(tutorDto.Neighborhood))
+                {
+                    tutor.Neighborhood = tutorDto.Neighborhood;
+                }
 
                 // Atualiza também o usuário relacionado na tabela Users, se necessário
-                var existingUser = await _context.Users.FindAsync(existingTutor.Id);
+                var existingUser = await _context.Users.FindAsync(tutor.Id.ToString());
 
                 if (existingUser == null)
                 {
                     return NotFound("Usuário associado ao tutor não encontrado.");
                 }
 
-                existingUser.UserName = tutorRequest.Email;
-                existingUser.Email = tutorRequest.Email;
+                existingUser.UserName = tutorDto.Email;
+                existingUser.Email = tutorDto.Email;
 
-                // Salva as mudanças no contexto do Entity Framework Core
                 await _context.SaveChangesAsync();
 
                 return NoContent();
             }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                // Log a exceção ou trate-a de acordo com a necessidade da sua aplicação
+                return StatusCode(500, "Erro de concorrência ao tentar atualizar o tutor.");
+            }
             catch (Exception ex)
             {
+                // Log a exceção ou trate-a de acordo com a necessidade da sua aplicação
                 return StatusCode(500, "Erro interno ao tentar atualizar o tutor.");
             }
         }
-
 
 
         [NonAction]

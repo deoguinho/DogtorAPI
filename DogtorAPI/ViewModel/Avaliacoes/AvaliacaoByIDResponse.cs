@@ -13,5 +13,6 @@
         public Guid VeterinarioID { get; set; }
         public string VeterinarioName { get; set; }
         public string VeterinarioPhoto { get; set; }
+        public string Resposta { get; set; }
     }
 }

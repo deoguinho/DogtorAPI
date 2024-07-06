@@ -118,50 +118,75 @@ namespace DogtorAPI.Controllers
             return veterinario;
         }
 
+
+        [HttpGet("relatorios/{veterinarioId}")]
+        public async Task<ActionResult> GetStatusCount(Guid veterinarioId)
+        {
+            var aceitasCount = await _context.Consulta
+              .Where(c => c.VeterinarioId == veterinarioId && c.Status == "ACEITO")
+              .CountAsync();
+            var concluidoCount = await _context.Consulta
+                .Where(c => c.VeterinarioId == veterinarioId && c.Status == "CONCLUIDO")
+                .CountAsync();
+
+            var pendenteCount = await _context.Consulta
+                 .Where(c => c.VeterinarioId == veterinarioId && c.Status == "PENDENTE")
+                 .CountAsync();
+
+            var mediaAvaliacoes = await CalcularMediaAvaliacoes(veterinarioId);
+            var quantidadeAvaliacoes = await _context.Avaliacoes.Where(a => a.VeterinarioID == veterinarioId).CountAsync();
+            return Ok(new
+            {
+                Aceito = aceitasCount,
+                Concluido = concluidoCount,
+                Pendente = pendenteCount,
+                MediaAvaliacoes = Math.Floor(mediaAvaliacoes),
+                QuantidadeAvaliacoes = quantidadeAvaliacoes
+            });
+        }
+
         // PUT: api/Veterinarios/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVeterinario(Guid id, PutRequestVeterinario veterinario)
+        public async Task<IActionResult> PutVeterinario(Guid id, [FromBody] PutRequestVeterinario veterinarioDto)
         {
-            if (_context.Veterinario == null)
+            var veterinario = _context.Veterinario.FirstOrDefault(v => v.Id == id);
+            if (veterinario == null)
             {
                 return NotFound();
             }
 
-            if (id != veterinario.Id)
-            {
-                return BadRequest("ID do caminho não coincide com o ID do corpo da requisição.");
-            }
-
-            var existingVeterinario = await _context.Veterinario.FindAsync(id);
-            if (existingVeterinario == null)
-            {
-                return NotFound();
-            }
-            existingVeterinario.Name = veterinario.Name;
-            _context.Entry(existingVeterinario).State = EntityState.Modified;
-
+            if (veterinarioDto.Name != null)
+                veterinario.Name = veterinarioDto.Name;
+            if (veterinarioDto.Email != null)
+                veterinario.Email = veterinarioDto.Email;
+            if (veterinarioDto.Birth != null)
+                veterinario.Birth = veterinarioDto.Birth;
+            if (veterinarioDto.Phone != null)
+                veterinario.Phone = veterinarioDto.Phone;
+            if (veterinarioDto.Cep != null)
+                veterinario.Cep = veterinarioDto.Cep;
+            if (veterinarioDto.Street != null)
+                veterinario.Street = veterinarioDto.Street;
+            if (veterinarioDto.Number != 0)
+                veterinario.Number = veterinarioDto.Number;
+            if (veterinarioDto.City != null)
+                veterinario.City = veterinarioDto.City;
+            if (veterinarioDto.Complement != null)
+                veterinario.Complement = veterinarioDto.Complement;
+            if (veterinarioDto.Neighborhood != null)
+                veterinario.Neighborhood = veterinarioDto.Neighborhood;
             try
             {
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(); // Salva as mudanças no banco de dados
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!VeterinarioPutExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                // Trate aqui exceções de concorrência, se necessário
+                throw;
             }
-
             return NoContent();
         }
-
-
-
         [NonAction]
         private bool VeterinarioPutExists(Guid id)
         {

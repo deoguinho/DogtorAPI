@@ -60,6 +60,7 @@ namespace DogtorAPI.Controllers
                                               VeterinarioID = a.VeterinarioID,
                                               VeterinarioName = a.Veterinario.Name,
                                               VeterinarioPhoto = a.Veterinario.Photo,
+                                              Resposta = a.Resposta,
                                               CreatedAt = a.CreatedAt // Adicione CreatedAt à seleção
                                           });
 
