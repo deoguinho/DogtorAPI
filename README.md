@@ -26,7 +26,7 @@ Este projeto é o back-end desenvolvido em C# utilizando Entity Framework Core (
 ## Instalação e Configuração
 1. Clone o repositório:
 ```
-git clone https://github.com/seu-usuario/dogtor.git
+git clone https://github.com/deoguinho/DogtorAPI.git
 cd dogtor
 ```
 2. Configure o banco de dados:
